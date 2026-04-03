@@ -1,4 +1,4 @@
-# 🏃‍♂️ Grupo Nasan - API de Inventario de Zapatos
+# API de Inventario de Zapatos
 
 API REST desarrollada con FastAPI para gestionar el inventario de zapatos de Grupo Nasan e integrarse con watsonx Orchestrate.
 
