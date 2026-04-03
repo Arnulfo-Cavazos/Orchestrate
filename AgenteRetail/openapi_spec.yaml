@@ -1,0 +1,188 @@
+openapi: 3.0.0
+info:
+  title: Grupo Nasan - API de Inventario de Zapatos
+  description: API para consultar inventario y obtener recomendaciones de zapatos para watsonx Orchestrate
+  version: 1.0.0
+servers:
+  - url: https://tu-app.onrender.com
+    description: Servidor de producción en Render (REEMPLAZAR con tu URL de Render)
+paths:
+  /buscar_zapatos:
+    post:
+      operationId: buscar_zapatos
+      summary: Buscar zapatos en el inventario
+      description: Busca zapatos según criterios como marca, tipo, color, talla, precio y género. Usa este endpoint cuando el cliente busca productos específicos o tiene preferencias claras.
+      parameters:
+        - name: marca
+          in: query
+          description: Marca del zapato (Nike, Adidas, Puma, Reebok, New Balance, Converse, Vans, Skechers, Fila, Under Armour)
+          required: false
+          schema:
+            type: string
+        - name: tipo
+          in: query
+          description: Tipo de zapato (Deportivo, Casual, Running, Skate, Training, Confort, Outdoor)
+          required: false
+          schema:
+            type: string
+        - name: color
+          in: query
+          description: Color del zapato (Negro, Blanco, Azul, Gris, Rojo, Verde, Multicolor)
+          required: false
+          schema:
+            type: string
+        - name: talla
+          in: query
+          description: Talla del zapato (número entre 22 y 30)
+          required: false
+          schema:
+            type: number
+            format: float
+        - name: precio_max
+          in: query
+          description: Precio máximo en pesos mexicanos
+          required: false
+          schema:
+            type: number
+            format: float
+        - name: genero
+          in: query
+          description: Género (Hombre, Mujer, Unisex)
+          required: false
+          schema:
+            type: string
+        - name: limite
+          in: query
+          description: Número máximo de resultados a retornar (1-50)
+          required: false
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 50
+      responses:
+        '200':
+          description: Lista de zapatos encontrados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_resultados:
+                    type: integer
+                    description: Número total de zapatos encontrados
+                  zapatos:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        marca:
+                          type: string
+                        modelo:
+                          type: string
+                        tipo:
+                          type: string
+                        color:
+                          type: string
+                        talla_min:
+                          type: number
+                        talla_max:
+                          type: number
+                        precio:
+                          type: number
+                        stock:
+                          type: integer
+                        genero:
+                          type: string
+                        descripcion:
+                          type: string
+                        imagen_url:
+                          type: string
+                  mensaje:
+                    type: string
+                    description: Mensaje descriptivo sobre los resultados
+        '500':
+          description: Error del servidor
+  /recomendar_zapatos:
+    post:
+      operationId: recomendar_zapatos
+      summary: Obtener recomendaciones de zapatos
+      description: Proporciona recomendaciones personalizadas de zapatos según el uso previsto, presupuesto y preferencias. Usa este endpoint cuando el cliente necesita sugerencias o no sabe qué comprar.
+      parameters:
+        - name: uso
+          in: query
+          description: Uso previsto del zapato (correr, casual, deporte, caminar, trabajo, skate, senderismo)
+          required: true
+          schema:
+            type: string
+        - name: presupuesto
+          in: query
+          description: Presupuesto máximo en pesos mexicanos
+          required: false
+          schema:
+            type: number
+            format: float
+        - name: genero
+          in: query
+          description: Género preferido (Hombre, Mujer, Unisex)
+          required: false
+          schema:
+            type: string
+        - name: limite
+          in: query
+          description: Número de recomendaciones (1-10)
+          required: false
+          schema:
+            type: integer
+            default: 5
+            minimum: 1
+            maximum: 10
+      responses:
+        '200':
+          description: Lista de zapatos recomendados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  recomendaciones:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        marca:
+                          type: string
+                        modelo:
+                          type: string
+                        tipo:
+                          type: string
+                        color:
+                          type: string
+                        talla_min:
+                          type: number
+                        talla_max:
+                          type: number
+                        precio:
+                          type: number
+                        stock:
+                          type: integer
+                        genero:
+                          type: string
+                        descripcion:
+                          type: string
+                        imagen_url:
+                          type: string
+                  razon:
+                    type: string
+                    description: Explicación de por qué se recomiendan estos zapatos
+                  total:
+                    type: integer
+                    description: Número total de recomendaciones
+        '500':
+          description: Error del servidor
+
+# Made with Bob

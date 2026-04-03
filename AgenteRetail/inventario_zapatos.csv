@@ -1,0 +1,31 @@
+id,marca,modelo,tipo,color,talla_min,talla_max,precio,stock,genero,descripcion,imagen_url
+1,Nike,Air Max 270,Deportivo,Negro,22,30,2499.00,45,Unisex,Zapatillas deportivas con tecnología Air Max para máxima comodidad,https://images.unsplash.com/photo-1542291026-7eec264c27ff
+2,Adidas,Ultraboost 22,Running,Blanco,23,29,3299.00,32,Unisex,Tenis para correr con tecnología Boost de retorno de energía,https://images.unsplash.com/photo-1608231387042-66d1773070a5
+3,Puma,Suede Classic,Casual,Azul,22,28,1899.00,58,Unisex,Zapatillas clásicas de gamuza para uso diario,https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb
+4,Reebok,Classic Leather,Casual,Blanco,23,30,1699.00,41,Unisex,Tenis clásicos de piel para estilo casual,https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a
+5,New Balance,574 Core,Casual,Gris,22,29,2199.00,37,Unisex,Zapatillas versátiles con diseño retro,https://images.unsplash.com/photo-1539185441755-769473a23570
+6,Converse,Chuck Taylor All Star,Casual,Negro,20,30,1299.00,67,Unisex,Zapatillas icónicas de lona para todos los días,https://images.unsplash.com/photo-1607522370275-f14206abe5d3
+7,Vans,Old Skool,Skate,Negro,22,29,1499.00,52,Unisex,Zapatillas de skate clásicas con diseño atemporal,https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77
+8,Nike,Air Force 1,Casual,Blanco,22,30,2799.00,43,Unisex,Zapatillas urbanas icónicas con diseño clásico,https://images.unsplash.com/photo-1600269452121-4f2416e55c28
+9,Adidas,Stan Smith,Casual,Verde,23,29,2099.00,39,Unisex,Tenis minimalistas con detalles verdes característicos,https://images.unsplash.com/photo-1560769629-975ec94e6a86
+10,Puma,RS-X,Deportivo,Multicolor,23,28,2399.00,28,Unisex,Zapatillas deportivas con diseño futurista y colores vibrantes,https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa
+11,Nike,Revolution 6,Running,Negro,22,30,1599.00,55,Unisex,Tenis para correr económicos y cómodos,https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2
+12,Adidas,Superstar,Casual,Blanco,22,29,2299.00,48,Unisex,Zapatillas clásicas con las tres rayas icónicas,https://images.unsplash.com/photo-1612902376601-5bc7f0c4fc6e
+13,Skechers,Go Walk 6,Confort,Gris,23,30,1899.00,34,Unisex,Zapatillas ultra cómodas para caminar,https://images.unsplash.com/photo-1605348532760-6753d2c43329
+14,Fila,Disruptor II,Casual,Blanco,22,28,1799.00,42,Unisex,Zapatillas chunky con estilo retro de los 90s,https://images.unsplash.com/photo-1603808033192-082d6919d3e1
+15,Under Armour,Charged Assert 9,Running,Negro,23,30,1999.00,31,Unisex,Tenis para correr con amortiguación Charged,https://images.unsplash.com/photo-1606890737304-57a1ca8a5b62
+16,Nike,Blazer Mid 77,Casual,Blanco,22,29,2599.00,36,Unisex,Zapatillas de básquetbol vintage con estilo retro,https://images.unsplash.com/photo-1600054800747-be294a6a0d26
+17,Adidas,NMD R1,Casual,Negro,23,29,2899.00,29,Unisex,Zapatillas urbanas con tecnología Boost,https://images.unsplash.com/photo-1587563871167-1ee9c731aefb
+18,Puma,Cali Sport,Casual,Blanco,22,28,2199.00,44,Mujer,Zapatillas deportivas con estilo californiano,https://images.unsplash.com/photo-1605733160314-4fc7dac4bb16
+19,Reebok,Nano X2,Training,Negro,23,30,2699.00,26,Unisex,Zapatillas de entrenamiento funcional,https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa
+20,New Balance,Fresh Foam 1080,Running,Azul,23,29,3499.00,22,Unisex,Tenis premium para correr con máxima amortiguación,https://images.unsplash.com/photo-1606890737304-57a1ca8a5b62
+21,Converse,One Star,Casual,Negro,22,29,1399.00,51,Unisex,Zapatillas clásicas con estrella característica,https://images.unsplash.com/photo-1605733160314-4fc7dac4bb16
+22,Vans,Authentic,Casual,Rojo,22,28,1299.00,47,Unisex,Zapatillas de lona originales de Vans,https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77
+23,Nike,Pegasus 39,Running,Azul,23,30,2999.00,33,Unisex,Tenis versátiles para correr con amortiguación React,https://images.unsplash.com/photo-1542291026-7eec264c27ff
+24,Adidas,Terrex Swift R2,Outdoor,Negro,23,29,2799.00,27,Unisex,Zapatillas de senderismo resistentes al agua,https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2
+25,Puma,Future Rider,Casual,Multicolor,22,28,1999.00,38,Unisex,Zapatillas retro con diseño colorido,https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb
+26,Skechers,D'Lites,Casual,Blanco,22,29,1699.00,46,Mujer,Zapatillas chunky cómodas y elegantes,https://images.unsplash.com/photo-1603808033192-082d6919d3e1
+27,Fila,Ray Tracer,Casual,Negro,23,30,1899.00,35,Unisex,Zapatillas deportivas con diseño audaz,https://images.unsplash.com/photo-1605348532760-6753d2c43329
+28,Under Armour,HOVR Phantom 2,Running,Gris,23,29,2899.00,24,Unisex,Tenis para correr con tecnología HOVR,https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa
+29,Nike,Court Vision Low,Casual,Blanco,22,30,1799.00,49,Unisex,Zapatillas inspiradas en el básquetbol clásico,https://images.unsplash.com/photo-1600269452121-4f2416e55c28
+30,Adidas,ZX 2K Boost,Casual,Gris,23,28,2499.00,31,Unisex,Zapatillas futuristas con tecnología Boost,https://images.unsplash.com/photo-1587563871167-1ee9c731aefb
