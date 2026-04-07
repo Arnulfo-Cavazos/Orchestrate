@@ -1,0 +1,11 @@
+id,fecha,proveedor,material,numero_lote,total_piezas,piezas_rechazadas,porcentaje_rechazo,turno,operador,creado_en
+1,2026-04-02,Aceros del Norte,Acero inoxidable 304,AN-2026-001,1000,85,8.5,Matutino,Juan Pérez,2026-04-07T11:30:00.000000
+2,2026-03-26,Aceros del Norte,Acero al carbón A36,AN-2026-002,800,72,9.0,Vespertino,María González,2026-04-07T11:30:00.000000
+3,2026-03-20,Aceros del Norte,Acero galvanizado,AN-2026-003,1200,96,8.0,Nocturno,Carlos Ramírez,2026-04-07T11:30:00.000000
+4,2026-03-13,Aceros del Norte,Acero inoxidable 316,AN-2026-004,500,15,3.0,Matutino,Juan Pérez,2026-04-07T11:30:00.000000
+5,2026-04-04,Plásticos MX,Polipropileno,PMX-2026-001,2000,40,2.0,Matutino,Ana López,2026-04-07T11:30:00.000000
+6,2026-03-28,Plásticos MX,PVC,PMX-2026-002,1500,45,3.0,Vespertino,Roberto Sánchez,2026-04-07T11:30:00.000000
+7,2026-03-18,Plásticos MX,Polietileno,PMX-2026-003,1800,54,3.0,Nocturno,Laura Martínez,2026-04-07T11:30:00.000000
+8,2026-03-31,Herrajes Monterrey,Tornillos M8,HM-2026-001,5000,280,5.6,Matutino,Pedro Hernández,2026-04-07T11:30:00.000000
+9,2026-03-24,Herrajes Monterrey,Tuercas M8,HM-2026-002,5000,300,6.0,Vespertino,Sofía Torres,2026-04-07T11:30:00.000000
+10,2026-03-16,Herrajes Monterrey,Arandelas,HM-2026-003,10000,400,4.0,Nocturno,Miguel Ángel Ruiz,2026-04-07T11:30:00.000000

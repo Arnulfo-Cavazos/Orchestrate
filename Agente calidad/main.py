@@ -2,9 +2,8 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timedelta
-import sqlite3
+import csv
 import os
-from contextlib import contextmanager
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -15,8 +14,9 @@ load_dotenv()
 
 app = FastAPI(title="Quality Control API", version="1.0.0")
 
-# Database configuration
-DB_NAME = "quality_control.db"
+# CSV file paths
+LOTES_CSV = "lotes.csv"
+ALERTAS_CSV = "alertas_log.csv"
 
 # Pydantic models
 class RegistrarLoteRequest(BaseModel):
@@ -70,57 +70,85 @@ class EnviarAlertaResponse(BaseModel):
     correo_enviado_a: str
     fecha_envio: str
 
-# Database context manager
-@contextmanager
-def get_db():
-    conn = sqlite3.connect(DB_NAME)
-    conn.row_factory = sqlite3.Row
-    try:
-        yield conn
-    finally:
-        conn.close()
+# CSV Helper functions
+def leer_lotes() -> List[dict]:
+    """Lee todos los lotes del archivo CSV"""
+    if not os.path.exists(LOTES_CSV):
+        return []
+    
+    lotes = []
+    with open(LOTES_CSV, 'r', encoding='utf-8') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            row['id'] = int(row['id'])
+            row['total_piezas'] = int(row['total_piezas'])
+            row['piezas_rechazadas'] = int(row['piezas_rechazadas'])
+            row['porcentaje_rechazo'] = float(row['porcentaje_rechazo'])
+            lotes.append(row)
+    return lotes
 
-# Initialize database
-def init_db():
-    with get_db() as conn:
-        cursor = conn.cursor()
-        
-        # Create lotes table
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS lotes (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                fecha TEXT NOT NULL,
-                proveedor TEXT NOT NULL,
-                material TEXT NOT NULL,
-                numero_lote TEXT NOT NULL,
-                total_piezas INTEGER NOT NULL,
-                piezas_rechazadas INTEGER NOT NULL,
-                porcentaje_rechazo REAL NOT NULL,
-                turno TEXT NOT NULL,
-                operador TEXT NOT NULL,
-                creado_en TEXT NOT NULL
-            )
-        """)
-        
-        # Create alertas_log table
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS alertas_log (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                fecha TEXT NOT NULL,
-                proveedor TEXT NOT NULL,
-                lotes_fallidos INTEGER NOT NULL,
-                rechazo_prom REAL NOT NULL,
-                correo_enviado INTEGER NOT NULL DEFAULT 0,
-                enviado_en TEXT
-            )
-        """)
-        
-        conn.commit()
+def escribir_lotes(lotes: List[dict]):
+    """Escribe todos los lotes al archivo CSV"""
+    fieldnames = ['id', 'fecha', 'proveedor', 'material', 'numero_lote', 
+                  'total_piezas', 'piezas_rechazadas', 'porcentaje_rechazo',
+                  'turno', 'operador', 'creado_en']
+    
+    with open(LOTES_CSV, 'w', newline='', encoding='utf-8') as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(lotes)
 
-# Initialize database on startup
-@app.on_event("startup")
-async def startup_event():
-    init_db()
+def agregar_lote(lote: dict):
+    """Agrega un nuevo lote al archivo CSV"""
+    lotes = leer_lotes()
+    
+    # Generar nuevo ID
+    if lotes:
+        nuevo_id = max(l['id'] for l in lotes) + 1
+    else:
+        nuevo_id = 1
+    
+    lote['id'] = nuevo_id
+    lotes.append(lote)
+    escribir_lotes(lotes)
+    return nuevo_id
+
+def leer_alertas() -> List[dict]:
+    """Lee todas las alertas del archivo CSV"""
+    if not os.path.exists(ALERTAS_CSV):
+        return []
+    
+    alertas = []
+    with open(ALERTAS_CSV, 'r', encoding='utf-8') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            row['id'] = int(row['id'])
+            row['lotes_fallidos'] = int(row['lotes_fallidos'])
+            row['rechazo_prom'] = float(row['rechazo_prom'])
+            row['correo_enviado'] = int(row['correo_enviado'])
+            alertas.append(row)
+    return alertas
+
+def agregar_alerta(alerta: dict):
+    """Agrega una nueva alerta al archivo CSV"""
+    alertas = leer_alertas()
+    
+    # Generar nuevo ID
+    if alertas:
+        nuevo_id = max(a['id'] for a in alertas) + 1
+    else:
+        nuevo_id = 1
+    
+    alerta['id'] = nuevo_id
+    alertas.append(alerta)
+    
+    fieldnames = ['id', 'fecha', 'proveedor', 'lotes_fallidos', 
+                  'rechazo_prom', 'correo_enviado', 'enviado_en']
+    
+    with open(ALERTAS_CSV, 'w', newline='', encoding='utf-8') as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(alertas)
 
 # Helper functions
 def calcular_porcentaje_rechazo(total_piezas: int, piezas_rechazadas: int) -> float:
@@ -128,18 +156,18 @@ def calcular_porcentaje_rechazo(total_piezas: int, piezas_rechazadas: int) -> fl
         return 0.0
     return round((piezas_rechazadas / total_piezas) * 100, 2)
 
-def obtener_lotes_proveedor_30d(proveedor: str):
+def obtener_lotes_proveedor_30d(proveedor: str) -> List[dict]:
     fecha_limite = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
     
-    with get_db() as conn:
-        cursor = conn.cursor()
-        cursor.execute("""
-            SELECT * FROM lotes 
-            WHERE proveedor = ? AND fecha >= ?
-            ORDER BY fecha DESC
-        """, (proveedor, fecha_limite))
-        
-        return cursor.fetchall()
+    lotes = leer_lotes()
+    lotes_filtrados = [
+        l for l in lotes 
+        if l['proveedor'] == proveedor and l['fecha'] >= fecha_limite
+    ]
+    
+    # Ordenar por fecha descendente
+    lotes_filtrados.sort(key=lambda x: x['fecha'], reverse=True)
+    return lotes_filtrados
 
 def calcular_estado_proveedor(proveedor: str) -> dict:
     lotes = obtener_lotes_proveedor_30d(proveedor)
@@ -246,7 +274,7 @@ async def health_check():
     return {
         "status": "healthy",
         "timestamp": datetime.now().isoformat(),
-        "database": "connected"
+        "database": "csv_files"
     }
 
 @app.get("/tool/proveedor/{nombre}", response_model=ProveedorResponse)
@@ -286,14 +314,8 @@ async def obtener_proveedor(nombre: str):
 async def obtener_ranking():
     fecha_limite = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
     
-    with get_db() as conn:
-        cursor = conn.cursor()
-        cursor.execute("""
-            SELECT DISTINCT proveedor FROM lotes 
-            WHERE fecha >= ?
-        """, (fecha_limite,))
-        
-        proveedores = [row['proveedor'] for row in cursor.fetchall()]
+    lotes = leer_lotes()
+    proveedores = list(set(l['proveedor'] for l in lotes if l['fecha'] >= fecha_limite))
     
     ranking = []
     for proveedor in proveedores:
@@ -315,14 +337,8 @@ async def obtener_ranking():
 async def obtener_alertas_pendientes():
     fecha_limite = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
     
-    with get_db() as conn:
-        cursor = conn.cursor()
-        cursor.execute("""
-            SELECT DISTINCT proveedor FROM lotes 
-            WHERE fecha >= ?
-        """, (fecha_limite,))
-        
-        proveedores = [row['proveedor'] for row in cursor.fetchall()]
+    lotes = leer_lotes()
+    proveedores = list(set(l['proveedor'] for l in lotes if l['fecha'] >= fecha_limite))
     
     alertas = []
     for proveedor in proveedores:
@@ -343,22 +359,20 @@ async def registrar_lote(lote: RegistrarLoteRequest):
     porcentaje_rechazo = calcular_porcentaje_rechazo(lote.total_piezas, lote.piezas_rechazadas)
     creado_en = datetime.now().isoformat()
     
-    with get_db() as conn:
-        cursor = conn.cursor()
-        cursor.execute("""
-            INSERT INTO lotes (
-                fecha, proveedor, material, numero_lote, 
-                total_piezas, piezas_rechazadas, porcentaje_rechazo,
-                turno, operador, creado_en
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (
-            lote.fecha, lote.proveedor, lote.material, lote.numero_lote,
-            lote.total_piezas, lote.piezas_rechazadas, porcentaje_rechazo,
-            lote.turno, lote.operador, creado_en
-        ))
-        
-        lote_id = cursor.lastrowid
-        conn.commit()
+    nuevo_lote = {
+        'fecha': lote.fecha,
+        'proveedor': lote.proveedor,
+        'material': lote.material,
+        'numero_lote': lote.numero_lote,
+        'total_piezas': lote.total_piezas,
+        'piezas_rechazadas': lote.piezas_rechazadas,
+        'porcentaje_rechazo': porcentaje_rechazo,
+        'turno': lote.turno,
+        'operador': lote.operador,
+        'creado_en': creado_en
+    }
+    
+    lote_id = agregar_lote(nuevo_lote)
     
     return LoteResponse(
         id=lote_id,
@@ -394,18 +408,16 @@ async def enviar_alerta(nombre: str):
         fecha_actual = datetime.now().strftime("%Y-%m-%d")
         enviado_en = datetime.now().isoformat()
         
-        with get_db() as conn:
-            cursor = conn.cursor()
-            cursor.execute("""
-                INSERT INTO alertas_log (
-                    fecha, proveedor, lotes_fallidos, rechazo_prom, 
-                    correo_enviado, enviado_en
-                ) VALUES (?, ?, ?, ?, ?, ?)
-            """, (
-                fecha_actual, nombre, info['lotes_fallidos_30d'], 
-                info['rechazo_promedio'], 1, enviado_en
-            ))
-            conn.commit()
+        nueva_alerta = {
+            'fecha': fecha_actual,
+            'proveedor': nombre,
+            'lotes_fallidos': info['lotes_fallidos_30d'],
+            'rechazo_prom': info['rechazo_promedio'],
+            'correo_enviado': 1,
+            'enviado_en': enviado_en
+        }
+        
+        agregar_alerta(nueva_alerta)
         
         alert_to = os.getenv("ALERT_TO")
         
@@ -423,11 +435,13 @@ async def enviar_alerta(nombre: str):
 @app.post("/seed")
 async def seed_database():
     # Clear existing data
-    with get_db() as conn:
-        cursor = conn.cursor()
-        cursor.execute("DELETE FROM lotes")
-        cursor.execute("DELETE FROM alertas_log")
-        conn.commit()
+    escribir_lotes([])
+    
+    fieldnames = ['id', 'fecha', 'proveedor', 'lotes_fallidos', 
+                  'rechazo_prom', 'correo_enviado', 'enviado_en']
+    with open(ALERTAS_CSV, 'w', newline='', encoding='utf-8') as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
     
     hoy = datetime.now()
     
@@ -546,34 +560,20 @@ async def seed_database():
     # Insert all lotes
     todos_lotes = lotes_aceros + lotes_plasticos + lotes_herrajes
     
-    with get_db() as conn:
-        cursor = conn.cursor()
+    for lote_data in todos_lotes:
+        porcentaje = calcular_porcentaje_rechazo(
+            lote_data['total_piezas'], 
+            lote_data['piezas_rechazadas']
+        )
+        creado_en = datetime.now().isoformat()
         
-        for lote_data in todos_lotes:
-            porcentaje = calcular_porcentaje_rechazo(
-                lote_data['total_piezas'], 
-                lote_data['piezas_rechazadas']
-            )
-            creado_en = datetime.now().isoformat()
-            
-            cursor.execute("""
-                INSERT INTO lotes (
-                    fecha, proveedor, material, numero_lote, 
-                    total_piezas, piezas_rechazadas, porcentaje_rechazo,
-                    turno, operador, creado_en
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (
-                lote_data['fecha'], lote_data['proveedor'], lote_data['material'], 
-                lote_data['numero_lote'], lote_data['total_piezas'], 
-                lote_data['piezas_rechazadas'], porcentaje,
-                lote_data['turno'], lote_data['operador'], creado_en
-            ))
-        
-        conn.commit()
+        lote_data['porcentaje_rechazo'] = porcentaje
+        lote_data['creado_en'] = creado_en
+        agregar_lote(lote_data)
     
     return {
         "success": True,
-        "mensaje": "Base de datos inicializada con datos de prueba",
+        "mensaje": "Base de datos CSV inicializada con datos de prueba",
         "proveedores_creados": [
             {
                 "nombre": "Aceros del Norte",

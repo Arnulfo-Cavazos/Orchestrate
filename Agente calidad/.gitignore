@@ -1,7 +1,7 @@
 # Environment variables
 .env
 
-# Database files
+# Database files (SQLite - ya no se usa)
 *.db
 *.db-journal
 *.sqlite
@@ -38,3 +38,5 @@ Thumbs.db
 dist/
 build/
 *.egg-info/
+
+# Note: CSV files are NOT ignored - they contain sample data

@@ -8,7 +8,7 @@ Microservicio FastAPI especializado en control de calidad de proveedores para ta
 - **Monitoreo de Proveedores**: Identifica proveedores en riesgo basado en lotes fallidos
 - **Sistema de Alertas**: Envío de alertas por correo electrónico para proveedores en riesgo
 - **Ranking de Proveedores**: Visualiza el desempeño de todos los proveedores
-- **Base de Datos SQLite**: Almacenamiento local sin necesidad de configuración adicional
+- **Archivos CSV**: Almacenamiento en archivos CSV con datos de muestra incluidos
 - **API RESTful**: Endpoints JSON estructurados para integración con orquestadores
 
 ## 📋 Requisitos
@@ -88,16 +88,21 @@ La API estará disponible en: http://localhost:8000
 
 Documentación interactiva: http://localhost:8000/docs
 
-### 7. Inicializar con datos de prueba
+### 7. Datos de muestra incluidos
 
-```bash
-curl -X POST http://localhost:8000/seed
-```
+La aplicación ya incluye archivos CSV con datos de muestra:
+- **lotes.csv**: 10 lotes de 3 proveedores diferentes
+- **alertas_log.csv**: Archivo vacío listo para registrar alertas
 
-Esto creará 3 proveedores de ejemplo:
+Proveedores incluidos:
 - **Aceros del Norte**: Estado RIESGO (3 lotes fallidos)
 - **Plásticos MX**: Estado NORMAL (0 lotes fallidos)
 - **Herrajes Monterrey**: Estado RIESGO (2 lotes fallidos)
+
+Si deseas reiniciar los datos, usa:
+```bash
+curl -X POST http://localhost:8000/seed
+```
 
 ## 🌐 Despliegue en Render
 
@@ -298,54 +303,66 @@ Un proveedor está en estado **RIESGO** si cumple:
 
 De lo contrario, está en estado **NORMAL**.
 
-## 📊 Estructura de la Base de Datos
+## 📊 Estructura de los Archivos CSV
 
-### Tabla: lotes
-```sql
-CREATE TABLE lotes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    fecha TEXT NOT NULL,
-    proveedor TEXT NOT NULL,
-    material TEXT NOT NULL,
-    numero_lote TEXT NOT NULL,
-    total_piezas INTEGER NOT NULL,
-    piezas_rechazadas INTEGER NOT NULL,
-    porcentaje_rechazo REAL NOT NULL,
-    turno TEXT NOT NULL,
-    operador TEXT NOT NULL,
-    creado_en TEXT NOT NULL
-);
+### lotes.csv
+Contiene todos los lotes de producción registrados.
+
+**Columnas:**
+- `id`: Identificador único del lote
+- `fecha`: Fecha del lote (YYYY-MM-DD)
+- `proveedor`: Nombre del proveedor
+- `material`: Tipo de material
+- `numero_lote`: Número de lote del proveedor
+- `total_piezas`: Total de piezas en el lote
+- `piezas_rechazadas`: Piezas rechazadas por calidad
+- `porcentaje_rechazo`: Porcentaje calculado automáticamente
+- `turno`: Turno de producción (Matutino/Vespertino/Nocturno)
+- `operador`: Nombre del operador
+- `creado_en`: Timestamp de creación del registro
+
+**Ejemplo:**
+```csv
+id,fecha,proveedor,material,numero_lote,total_piezas,piezas_rechazadas,porcentaje_rechazo,turno,operador,creado_en
+1,2026-04-02,Aceros del Norte,Acero inoxidable 304,AN-2026-001,1000,85,8.5,Matutino,Juan Pérez,2026-04-07T11:30:00.000000
 ```
 
-### Tabla: alertas_log
-```sql
-CREATE TABLE alertas_log (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    fecha TEXT NOT NULL,
-    proveedor TEXT NOT NULL,
-    lotes_fallidos INTEGER NOT NULL,
-    rechazo_prom REAL NOT NULL,
-    correo_enviado INTEGER NOT NULL DEFAULT 0,
-    enviado_en TEXT
-);
+### alertas_log.csv
+Registra todas las alertas enviadas por correo electrónico.
+
+**Columnas:**
+- `id`: Identificador único de la alerta
+- `fecha`: Fecha de la alerta (YYYY-MM-DD)
+- `proveedor`: Nombre del proveedor alertado
+- `lotes_fallidos`: Número de lotes fallidos detectados
+- `rechazo_prom`: Porcentaje promedio de rechazo
+- `correo_enviado`: 1 si se envió, 0 si no
+- `enviado_en`: Timestamp del envío del correo
+
+**Ejemplo:**
+```csv
+id,fecha,proveedor,lotes_fallidos,rechazo_prom,correo_enviado,enviado_en
+1,2026-04-07,Aceros del Norte,3,7.13,1,2026-04-07T12:00:00.000000
 ```
 
 ## 🛠️ Tecnologías
 
 - **FastAPI**: Framework web moderno y rápido
 - **Python 3.11**: Lenguaje de programación
-- **SQLite**: Base de datos embebida
+- **CSV**: Archivos CSV para almacenamiento de datos
 - **Pydantic**: Validación de datos
 - **smtplib**: Envío de correos electrónicos
 - **Uvicorn**: Servidor ASGI
 
 ## 📝 Notas Importantes
 
-- La base de datos SQLite se crea automáticamente al iniciar la aplicación
+- Los archivos CSV (`lotes.csv` y `alertas_log.csv`) ya incluyen datos de muestra
+- Los archivos CSV se crean automáticamente si no existen
 - No se requiere autenticación para los endpoints
 - Los correos solo se envían manualmente mediante el endpoint `/tool/enviar-alerta/{nombre}`
 - No hay schedulers automáticos; el orquestador debe llamar a los endpoints
 - Las credenciales de Gmail deben configurarse en variables de entorno
+- Los archivos CSV se suben al repositorio con datos de muestra
 
 ## 🤝 Integración con Orquestadores
 

@@ -56,12 +56,17 @@ En la sección **Environment**, agrega:
 # Verificar salud del servicio
 curl https://tu-servicio.onrender.com/health
 
-# Inicializar con datos de prueba
-curl -X POST https://tu-servicio.onrender.com/seed
-
-# Ver proveedores en riesgo
+# Ver proveedores en riesgo (ya incluye datos de muestra)
 curl https://tu-servicio.onrender.com/tool/alertas-pendientes
+
+# Ver ranking de proveedores
+curl https://tu-servicio.onrender.com/tool/ranking
+
+# Opcional: Reinicializar datos de prueba
+curl -X POST https://tu-servicio.onrender.com/seed
 ```
+
+**Nota:** La aplicación ya incluye archivos CSV con datos de muestra, por lo que no es necesario ejecutar `/seed` en el primer despliegue.
 
 ## 📧 Paso 4: Configurar Gmail App Password
 
@@ -97,10 +102,12 @@ Render desplegará automáticamente los cambios.
 - Asegúrate de que la verificación en dos pasos esté activada
 - Verifica que `GMAIL_USER` sea una cuenta de Gmail válida
 
-### Base de datos no persiste
+### Archivos CSV no persisten en Render Free
 - Render Free tier reinicia el servicio periódicamente
-- Los datos se perderán en cada reinicio
-- Usa `/seed` para reinicializar datos de prueba
+- Los cambios en los archivos CSV se perderán en cada reinicio
+- Los archivos CSV originales con datos de muestra se restauran en cada deploy
+- Usa `/seed` para reinicializar datos de prueba después de un reinicio
+- Para persistencia de datos, considera upgrade a plan pagado o usar una base de datos externa
 
 ## 📊 Endpoints Disponibles
 
