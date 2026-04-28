@@ -1,0 +1,16 @@
+material_id,material_name,material_type,unit_of_measure,standard_price,material_group
+MAT001,Tornillo M8x20,ZRAW,PC,0.50,FERT001
+MAT002,Tuerca M8,ZRAW,PC,0.30,FERT001
+MAT003,Arandela M8,ZRAW,PC,0.15,FERT001
+MAT004,Placa Base Acero,ZRAW,PC,25.00,FERT002
+MAT005,Motor Eléctrico 1HP,ZHAW,PC,450.00,FERT003
+MAT006,Rodamiento 6205,ZRAW,PC,12.50,FERT001
+MAT007,Eje Transmisión 20mm,ZRAW,PC,35.00,FERT002
+MAT008,Carcasa Aluminio,ZRAW,PC,85.00,FERT002
+MAT009,Cable Eléctrico 3x2.5,ZRAW,M,2.50,FERT004
+MAT010,Interruptor Seguridad,ZHAW,PC,18.00,FERT003
+MAT011,Pintura Industrial Gris,ZRAW,L,15.00,FERT005
+MAT012,Empaque Goma NBR,ZRAW,PC,3.50,FERT001
+MAT013,Válvula Solenoide 24V,ZHAW,PC,95.00,FERT003
+MAT014,Sensor Proximidad,ZHAW,PC,65.00,FERT003
+MAT015,Panel Control HMI,ZHAW,PC,850.00,FERT003
